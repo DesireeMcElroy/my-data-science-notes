@@ -562,3 +562,20 @@ SELECT
     gender,
     IF(gender = 'Female', TRUE, FALSE) AS is_female
 FROM customers;
+
+-- Or another method is 
+
+
+SELECT
+    gender,
+    IF(gender = 'Female', 'F', 'M') AS is_female
+FROM customers;
+
+-- I can create this new boolean column in another simple way, just evaluate the equality statement to True of False
+
+SELECT
+	gender,
+	gender = 'Female' AS is_female
+	FROM customers;
+	
+	
