@@ -24,6 +24,7 @@ FROM orders
 WHERE item_name LIKE '%b%';
 
 
+
 -- SUBSTRINGS: SUBSTR
 
 SELECT SUBSTR('When I see the sun always shines on TV', 12, 7);
@@ -94,6 +95,84 @@ SELECT concat(1, 'ham sandwich');
 SELECT 
 	CAST(123 AS CHAR(2)),
 	CAST('123' AS UNSIGNED);
+
+
+
+-- JOINS lesson ****************************
+
+-- Default Join is an Inner Join
+-- Inner Join filters nulls from the joined tables
+-- Inner Join here gives us only users with roles and roles with users
+SELECT *
+FROM users
+JOIN roles ON users.role_id = roles.id;
+
+-- Left Join
+-- Left join is All of Table A along w/ any nulls from Table B
+-- Left Join says "give me all the records from Table A even if there's no relation on Table B"
+SELECT *
+FROM users
+LEFT JOIN roles ON users.role_id = roles.id;
+
+-- What if we flip the Table A and table B?
+-- Left join gets all the records from Table A
+SELECT *
+FROM roles
+LEFT JOIN users ON users.role_id = roles.id;
+
+
+-- Right Join says get all records from the 2nd table, show any nulls from table 1
+SELECT *
+FROM roles
+RIGHT JOIN users ON users.role_id = roles.id;
+
+-- Right Join shows all records from the 2nd table
+SELECT *
+FROM users
+RIGHT JOIN roles ON users.role_id = roles.id;
+
+
+
+-- Inner join of authors and quotes
+-- we'll get authors with quotes, quotes with authors, no nulls
+SELECT *
+FROM AUTHORS
+JOIN quotes ON quotes.author_id = authors.id;
+
+
+-- Inner join of authors and quotes
+-- we'll get authors with quotes, quotes with authors, no nulls
+-- We can do a second join, to add a 3rd table (add the quote_topic)
+-- Then a 3rd join to add on the topics table to get the name of the topic
+
+SELECT *
+FROM AUTHORS
+JOIN quotes ON quotes.author_id = authors.id
+JOIN quote_topic ON quote_topic.quote_id = quotes.id
+JOIN topics ON topics.id = quote_topic.topic_id;
+
+-- Example of a left join
+-- We keep all the records from the FIRST table
+select *
+from authors
+left join quotes on quotes.author_id = authors.id;
+
+
+-- Notice, we're performing a Left Join... 
+-- So we get all the records from Quotes table
+-- Not all authors have quotes
+select *
+from quotes
+left join authors on quotes.author_id = authors.id;
+
+-- If you get the same results from an inner join as a left join
+-- that means that Table B doesn't have any nulls
+-- All quotes have an author
+select *
+from quotes
+join authors on quotes.author_id = authors.id;
+
+
 
 
 
@@ -258,7 +337,7 @@ SELECT * FROM employees_with_departments;
 
 
 
-
+-- EXERCISE REVIEW FOR TEMP TABLES
 
 -- Exercise 2
 -- Write the SQL necessary to transform the amount column such that it is stored as an integer representing the number of cents of the payment. For example, 1.99 should become 199.
@@ -297,6 +376,7 @@ DESCRIBE payments;
 -- Write the numbers down:
 -- 63,810 historic average salary
 -- 16,904 historic standard deviation
+
 SELECT AVG(salary) AS avg_salary, std(salary) AS std_salary
 FROM employees.salaries ;
 
@@ -579,3 +659,65 @@ SELECT
 	FROM customers;
 	
 	
+	
+	-- Quiz 
+
+-- 9. 
+
+
+USE employees;
+
+SELECT emp_no, count(*)
+FROM employees
+GROUP BY gender;
+-- We get an error
+
+
+-- 13. 
+
+SELECT concat(first_name, " ", last_name) AS fullname
+FROM employees;
+
+
+-- 21. 
+
+select distinct(make)
+from cars;
+
+-- 22. 
+
+select count(distinct(car_id))
+from cars;
+
+-- example
+SELECT count(distinct(title))
+FROM titles;
+use florence08;
+
+create temporary table unique_titles as
+(
+SELECT count(distinct(employees.titles.title))
+FROM employees.titles
+);
+
+select *
+from unique_titles;
+
+select employees.titles.title, unique titles
+from employees.titles;
+
+-- example
+
+
+-- 24.
+
+select distinct(car_id), count(distinct(car_id))
+from cars
+join engines on cars.engine_id = engines.id;
+
+-- 17. 
+
+select avg(n), min(n), max(n), sum(n), stddev(n)
+from numbers;
+
+-- 24. Using the database structure in the image below, write a query that will return a list of the unique makes of cars in the database, and the number of cars with that make. NOTE: cars.engine_id is a foreign key referencing engines.id (primary key in engines table). cars.car_id is the primary key in the cars table.
